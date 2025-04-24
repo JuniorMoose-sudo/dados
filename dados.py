@@ -254,6 +254,24 @@ if arquivo:
                         color_continuous_scale='Blues'
                     )
                     st.plotly_chart(fig_resp, use_container_width=True)
+            with st.container():
+                if mapeamento_colunas['localidade']:
+                    st.subheader("Solicitações por Bairro (Localidade)")
+                    df_bairros = df_filtrado[mapeamento_colunas['localidade']].value_counts().reset_index()
+                    df_bairros.columns = ['Bairro', 'Quantidade']
+
+                    fig_bairros = px.bar(
+                        df_bairros,
+                        x='Quantidade',
+                        y='Bairro',
+                        orientation='h',
+                        title='Quantidade de Solicitações por Bairro',
+                        color='Quantidade',
+                        color_continuous_scale='Greens',
+                        labels={'Quantidade': 'Solicitações', 'Bairro': 'Bairro'}
+                    )
+
+                    st.plotly_chart(fig_bairros, use_container_width=True)
 
         with tab2:
             if mapeamento_colunas['criacao']:
