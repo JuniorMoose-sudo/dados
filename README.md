@@ -1,4 +1,5 @@
 📊 Dashboard de Análise de Serviços
+
 Este projeto é um dashboard interativo desenvolvido com Streamlit que permite a análise visual e dinâmica de dados oriundos de planilhas Excel contendo protocolos ou solicitações de serviços. Ele é ideal para equipes que desejam monitorar status de atendimentos, prazos de vencimento, cumprimento de SLA e demais métricas operacionais de forma simples e eficaz.
 
 🔧 Funcionalidades
