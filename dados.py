@@ -289,73 +289,76 @@ if arquivo:
                         format_func=lambda x: mapeamento_colunas[x]
                     )
 
-                    df_grouped = df_temporal.groupby(['Mês', mapeamento_colunas[agg_col]]).size().reset_index(
-                        name='Contagem')
+                    df_grouped = df_temporal.groupby(['Mês', mapeamento_colunas[agg_col]]).size().reset_index(name='Quantidade')
 
                     fig_temporal = px.line(
                         df_grouped,
-                        x='Mês', y='Contagem',
+                        x='Mês',
+                        y='Quantidade',
                         color=mapeamento_colunas[agg_col],
-                        title=f"Evolução de Protocolos por {mapeamento_colunas[agg_col]}",
-                        markers=True
+                        markers=True,
+                        title=f"Evolução Temporal por {mapeamento_colunas[agg_col]}"
+                    )
+                    st.plotly_chart(fig_temporal, use_container_width=True)
+                else:
+                    df_grouped = df_temporal.groupby('Mês').size().reset_index(name='Quantidade')
+                    fig_temporal = px.line(
+                        df_grouped,
+                        x='Mês',
+                        y='Quantidade',
+                        markers=True,
+                        title="Evolução Temporal de Solicitações"
                     )
                     st.plotly_chart(fig_temporal, use_container_width=True)
 
         with tab3:
-            if mapeamento_colunas['area'] and mapeamento_colunas['status']:
-                st.subheader("Status por Área")
+            st.subheader("Comparativo entre Áreas ou Tipos de Serviço")
+            if mapeamento_colunas['area'] and mapeamento_colunas['tipo_servico']:
+                col_comparar = st.radio("Comparar por:", ['Área', 'Tipo de Serviço'])
+                col_escolhida = mapeamento_colunas['area'] if col_comparar == 'Área' else mapeamento_colunas['tipo_servico']
+                comparativo = df_filtrado[col_escolhida].value_counts().reset_index()
+                comparativo.columns = [col_comparar, 'Quantidade']
 
-                df_comparativo = df_filtrado.groupby([
-                    mapeamento_colunas['area'],
-                    mapeamento_colunas['status']
-                ]).size().reset_index(name='Contagem')
-
-                fig_comparativo = px.sunburst(
-                    df_comparativo,
-                    path=[mapeamento_colunas['area'], mapeamento_colunas['status']],
-                    values='Contagem',
-                    title="Distribuição de Status por Área"
+                fig_comp = px.bar(
+                    comparativo,
+                    x='Quantidade',
+                    y=col_comparar,
+                    orientation='h',
+                    color='Quantidade',
+                    color_continuous_scale='Viridis',
+                    title=f"Solicitações por {col_comparar}"
                 )
-                st.plotly_chart(fig_comparativo, use_container_width=True)
+                st.plotly_chart(fig_comp, use_container_width=True)
 
         with tab4:
-            if 'Tempo_para_Vencimento' in df_filtrado.columns:
-                st.subheader("Análise de Prazos")
+            st.subheader("Análise de SLA por Localidade ou Responsável")
+            opcao = None
+            if mapeamento_colunas['localidade']:
+                opcao = 'Localidade'
+            elif mapeamento_colunas['responsavel']:
+                opcao = 'Responsável'
 
-                col1, col2 = st.columns(2)
+            if opcao:
+                col_base = mapeamento_colunas['localidade'] if opcao == 'Localidade' else mapeamento_colunas['responsavel']
+                df_sla = df_filtrado.dropna(subset=['Dentro_SLA'])
 
-                with col1:
-                    fig_box = px.box(
-                        df_filtrado,
-                        y='Tempo_para_Vencimento',
-                        points="all",
-                        title="Distribuição de Prazos (dias)"
-                    )
-                    st.plotly_chart(fig_box, use_container_width=True)
+                df_group_sla = df_sla.groupby(col_base)['Dentro_SLA'].mean().reset_index()
+                df_group_sla['Dentro_SLA'] = df_group_sla['Dentro_SLA'] * 100
+                df_group_sla = df_group_sla.sort_values(by='Dentro_SLA', ascending=False)
 
-                with col2:
-                    if 'Tempo_Resolução' in df_filtrado.columns:
-                        fig_scatter = px.scatter(
-                            df_filtrado,
-                            x='Tempo_para_Vencimento',
-                            y='Tempo_Resolução',
-                            color=mapeamento_colunas['status'] if mapeamento_colunas['status'] else None,
-                            title="Relação Prazo vs Tempo de Resolução",
-                            labels={
-                                'Tempo_para_Vencimento': 'Prazo (dias)',
-                                'Tempo_Resolução': 'Tempo Resolução (dias)'
-                            }
-                        )
-                        fig_scatter.add_trace(
-                            go.Scatter(
-                                x=[0, df_filtrado['Tempo_para_Vencimento'].max()],
-                                y=[0, df_filtrado['Tempo_para_Vencimento'].max()],
-                                mode='lines',
-                                line=dict(color='red', dash='dash'),
-                                name='Linha de SLA'
-                            )
-                        )
-                        st.plotly_chart(fig_scatter, use_container_width=True)
+                fig_sla = px.bar(
+                    df_group_sla,
+                    x='Dentro_SLA',
+                    y=col_base,
+                    orientation='h',
+                    title=f"Percentual Dentro do SLA por {opcao}",
+                    labels={'Dentro_SLA': '% Dentro do SLA', col_base: opcao},
+                    color='Dentro_SLA',
+                    color_continuous_scale='Tealgrn'
+                )
+                st.plotly_chart(fig_sla, use_container_width=True)
+            else:
+                st.info("Nenhuma coluna de localidade ou responsável mapeada para análise de SLA.")
 
         # Dados filtrados
         st.header("📋 Dados Detalhados")
