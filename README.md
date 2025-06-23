@@ -1,21 +1,11 @@
-📊 Dashboard de Análise de Serviços
+📊 Análise de Serviços - Dashboard Streamlit
+Um dashboard interativo feito com Python, Streamlit e Plotly, para análise, filtragem, visualização de indicadores e exportação de dados de atendimento/serviços, com foco em SLA, área, localidade, status e muito mais.
 
-Este projeto é um dashboard interativo desenvolvido com Streamlit que permite a análise visual e dinâmica de dados oriundos de planilhas Excel contendo protocolos ou solicitações de serviços. Ele é ideal para equipes que desejam monitorar status de atendimentos, prazos de vencimento, cumprimento de SLA e demais métricas operacionais de forma simples e eficaz.
-
-🔧 Funcionalidades
-Upload de Planilha (.xlsx): Interface para carregar arquivos Excel.
-
-Correção Automática de Colunas Duplicadas: Renomeia colunas repetidas para evitar erros.
-
-Mapeamento Inteligente de Colunas: Detecta automaticamente colunas com base em palavras-chave (ex: "status", "vencimento", "conclusão" etc).
-
-Mapeamento Manual de Colunas: Interface lateral permite ao usuário corrigir ou ajustar manualmente os mapeamentos.
-
-Conversão de Datas: Colunas de datas são automaticamente convertidas para formato datetime.
-
-Filtros Interativos: Filtros por área, localidade, tipo de serviço, data de criação e vencimento.
-
-Cálculo de Métricas Operacionais:
+🚀 Funcionalidades
+✅ Upload de planilhas .xlsx com estrutura flexível (o sistema tenta reconhecer colunas automaticamente)
+✅ Mapeamento manual de colunas caso os nomes estejam diferentes
+✅ Filtros por Área, Localidade, Data de Criação, Data de Vencimento, Tipo de Serviço
+✅ Cálculo de métricas principais:
 
 Total de protocolos
 
@@ -23,47 +13,80 @@ Protocolos atrasados
 
 Tempo médio de resolução
 
-Percentual de SLA atendido
+Percentual dentro do SLA
 
-Visualizações com Plotly:
+✅ Gráficos interativos:
 
-Gráficos de pizza (status)
+Distribuição por Status
 
-Barras horizontais (responsáveis, bairros)
+Top 10 Responsáveis
 
-Série temporal de criação de protocolos
+Solicitações por Bairro
 
-Comparativo por áreas, tipos, etc.
+Evolução temporal
 
-Gráficos sobre cumprimento de SLA
+Comparativo entre áreas ou tipos de serviço
 
+SLA por Localidade ou Responsável
 
-📦 Estrutura esperada do arquivo Excel
-A planilha deve conter colunas com informações como:
+✅ Visualização e exportação dos dados filtrados para Excel ou CSV
 
-Data de criação ou abertura
+🖥️ Tecnologias Utilizadas
+Python 🐍
 
-Prazo ou vencimento
+Streamlit 🚀
 
-Data de conclusão (opcional)
+Pandas 🐼
 
-Status do protocolo
+Plotly 📊
 
+NumPy
+
+OpenPyXL (para exportação em Excel)
+
+📂 Estrutura Esperada da Planilha de Entrada
+O sistema é flexível e tenta detectar automaticamente colunas por palavras-chave como:
+
+Campo	Exemplos de nomes aceitos
+Status	status, situação
+Responsável	responsável, analista
+Data de Abertura	abertura, data_abertura
+Área	área, setor
+Localidade	localidade, regional
+Data de Criação	criação, cadastro
+Data de Vencimento	vencimento, prazo
+Data de Conclusão	conclusão, encerramento
+Tipo de Serviço	tipo de serviço, natureza
+
+Você pode fazer o mapeamento manual nas configurações laterais (sidebar) se preferir.
+
+🛠️ Como Executar Localmente
+Clone o repositório:
+
+git clone https://github.com/JuniorMoose-sudo/dados
+
+Crie um ambiente virtual (opcional, mas recomendado):
+
+python -m venv venv
+source venv/bin/activate  # Linux/macOS
+venv\Scripts\activate     # Windows
+
+Instale as dependências:
+
+pip install -r requirements.txt
+
+Execute o Streamlit:
+
+streamlit run app.py
+
+📥 Exemplo de Planilha
+
+Status
 Responsável
-
-Área ou setor
-
-Tipo de serviço
-
+Data de Abertura
+Área
 Localidade
-
-O sistema reconhece nomes similares automaticamente, como por exemplo: “data_abertura”, “prazo”, “fim”, “responsável”, etc.
-
-✨ Exemplos de Uso
-Análise de protocolos de atendimento de chamados técnicos
-
-Gestão de ordens de serviço por área ou bairro
-
-Acompanhamento de prazos e desempenho de equipes
-
-Monitoramento de SLA e eficiência de atendimento
+Data de Criação
+Data de Vencimento
+Data de Conclusão
+Tipo de Serviço
